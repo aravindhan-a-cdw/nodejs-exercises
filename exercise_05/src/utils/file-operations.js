@@ -1,6 +1,7 @@
 const fs = require('fs');
+require('dotenv').config();
 
-const dataSourceFileName = __dirname + '/../../files/cdw_ace23_buddies.json';
+const dataSourceFileName = process.env.BUDDIES_FILE_NAME;
 
 const writeJsonFile = (jsonObj) => {
     fs.writeFile(dataSourceFileName, JSON.stringify(jsonObj, null, '\t'), 'utf-8', (err) => {
@@ -18,7 +19,7 @@ const readJsonFileSync = () => {
     } catch(err) {
         console.error("Error occurred while reading file.", err.message);
     }
-    return [];
+    return []; // This feels wrong as the caller won't know whether the file is empty or it has []
 }
 
 module.exports = {writeJsonFile, readJsonFileSync};

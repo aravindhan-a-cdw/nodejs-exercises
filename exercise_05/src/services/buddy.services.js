@@ -1,10 +1,15 @@
 // Imports 
 const { readJsonFileSync, writeJsonFile } = require('../utils/file-operations');
+require('dotenv').config();
 
+const useMemory = process.env.USE_MEMORY;
+let buddiesList = [];
 
-const useMemory = false;
-let buddiesList = [{ id: 10, name: "Aravindhan A", nickname: "Arav" }];
-
+/**
+ * Function which returns buddies list from file if useMemory is set to false else it will return array saved in memory.
+ * 
+ * @returns {Array}
+ */
 const getBuddiesData = () => {
     if (useMemory) {
         return buddiesList;
@@ -13,12 +18,21 @@ const getBuddiesData = () => {
     return buddiesList;
 }
 
+/**
+ * Function to get all buddies.
+ * @returns {Array}
+ */
 const getAllBuddies = () => {
     return getBuddiesData();
 };
 
+/**
+ * This function requires either employeeId or name to return the matching buddies from the list.
+ * @param {Number} id EmployeeId
+ * @param {String} name realName of the buddy
+ * @returns {Array}
+ */
 const getBuddy = (id = null, name = null) => {
-    console.log("ID", id, "Name", name);
     const buddies = getBuddiesData();
 
     let buddy = [];
@@ -30,27 +44,33 @@ const getBuddy = (id = null, name = null) => {
     return buddy;
 };
 
+/**
+ * 
+ * @param {Object} buddyData An object containing employeeId, realName, nickName, dob, hobbies.
+ * @returns {String|null} Error message or null
+ */
 const createBuddy = (buddyData) => {
-    
-    if (isNaN(buddyData.employeeId)) {
-        return "EmployeeId is not valid!";
-    }
-    
-    if (!buddyData.realName || !buddyData.nickName || !buddyData.dob || !buddyData.hobbies) {
-        return "Some values given by you are not valid!";
-    }
+
+    // Check if buddy already exists
 
     const existingBuddy = buddiesList.filter(buddy => buddy.employeeId === buddyData.employeeId);
     if(existingBuddy.length !== 0) {
         return "You are already in the list!";
     }
 
+    // Store new buddy to the list
     buddiesList.push(buddyData);
     writeJsonFile(buddiesList);
     return null;
 
 };
 
+/**
+ * Handler to update buddy information.
+ * @param {Number} id EmployeeId 
+ * @param {Object} buddyData An object containing data to be updated
+ * @returns {String | null} Error message in case of any error or null
+ */
 const updateBuddy = (id, buddyData) => {
     const index = buddiesList.findIndex((buddy) => buddy.employeeId === id);
     if(index === -1) {
@@ -64,6 +84,11 @@ const updateBuddy = (id, buddyData) => {
     return null;
 };
 
+/**
+ * Handler to delete a buddy by passing the employeeId
+ * @param {Number} id EmployeeId to delete from the list
+ * @returns {String | null} Error message in case of any error or null
+ */
 const deleteBuddy = (id) => {
     const index = buddiesList.findIndex((buddy) => buddy.employeeId === id);
     if(index === -1) {
