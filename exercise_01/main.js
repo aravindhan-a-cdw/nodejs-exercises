@@ -12,9 +12,14 @@ let newFileName = 'randomized_color_palette.json';
 
 // Get File Data and convert to object synchronously.
 const getJsonFileSync = (fileName) => {
-    const fileData = fs.readFileSync(fileName, "utf-8");
-    const jsonData = JSON.parse(fileData);
-    return jsonData;
+    try{
+        const fileData = fs.readFileSync(fileName, "utf-8");
+        const jsonData = JSON.parse(fileData);
+        return jsonData;
+    } catch (err) {
+        console.error(err.message);
+    }
+    return null;
 }
 
 // Get File Data and parse as json and pass it to the callback
@@ -25,8 +30,12 @@ const getJsonFileAsync = (fileName, callback) => {
             console.error(err.message);
             return;
         }
-        const jsonFileData = JSON.parse(fileData);
-        callback(jsonFileData);
+        try{
+            const jsonFileData = JSON.parse(fileData);
+            callback(jsonFileData);
+        } catch (err) {
+            console.log(err.message);
+        }
     });
 }
 
