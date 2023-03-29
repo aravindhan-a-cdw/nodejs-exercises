@@ -20,7 +20,13 @@ server.listen(PORT, () => {
 // Handle Request
 server.on('request', (req, res) => {
     if(req.url === '/random-color-palette') {
-        return randomColorRequestHandler(req, res);
+        try {
+            return randomColorRequestHandler(req, res);
+        } catch (err) {
+            console.error(err.message);
+            res.statusCode = 500;
+            res.end("500: Server Unable to process your request.");
+        }
     }
     res.end("Method or path does not exists");
 })

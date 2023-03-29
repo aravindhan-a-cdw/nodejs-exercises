@@ -10,8 +10,12 @@ const getJsonFileAsync = (fileName, callback) => {
             console.error(err.message);
             return;
         }
-        const jsonFileData = JSON.parse(fileData);
-        callback(jsonFileData);
+        try{
+            const jsonFileData = JSON.parse(fileData);
+            callback(jsonFileData);
+        } catch (err) {
+            console.error(err.message);
+        }
     });
 }
 
