@@ -1,4 +1,5 @@
 const fs = require('fs');
+const getRandomElements = require('random-elements-array')
 
 const sourceFileName = 'color_palette.json';
 
@@ -15,28 +16,9 @@ const getJsonFileAsync = (fileName, callback) => {
     });
 }
 
-// Get random elements array by passing the array and count.
-const getRandomArray = (array, elementCount) => {
-
-    if(elementCount > array.length) {
-        console.log("Elements count cannot be greater than the array length");
-        return null;
-    }
-    const randomArray = [];
-
-    while(elementCount != 0) {
-        const randomIndex = Math.floor(Math.random() * array.length);
-        const randomElement = array.splice(randomIndex, 1);
-        randomArray.push(...randomElement);
-        elementCount--;
-    }
-
-    return randomArray;
-}
-
 const randomColorRequestHandler = (req, res) => {
     getJsonFileAsync('data/' + sourceFileName, (jsonData) => {
-        const randomPalette = getRandomArray(jsonData, 5);
+        const randomPalette = getRandomElements(jsonData, 5);
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify({'color-palette': randomPalette}, null, 4));
     })
