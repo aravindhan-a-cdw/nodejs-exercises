@@ -3,18 +3,16 @@ const fs = require('fs');
 const sourceFileName = 'color_palette.json';
 
 // Get File Data and parse as json and pass it to the callback
-const getJsonFileAsync = (fileName, callback) => {
+const getJsonFileAsync = (fileName, callback, errHanlder) => {
     fs.readFile(fileName, 'utf-8', (err, fileData) => {
-        if (err) {
-            console.log("Error while reading the file");
-            console.error(err.message);
-            return;
-        }
         try{
+            if (err) {
+                throw err;
+            }
             const jsonFileData = JSON.parse(fileData);
             callback(jsonFileData);
         } catch (err) {
-            console.error(err.message);
+            errHanlder(err);
         }
     });
 }
@@ -23,8 +21,7 @@ const getJsonFileAsync = (fileName, callback) => {
 const getRandomArray = (array, elementCount) => {
 
     if(elementCount > array.length) {
-        console.log("Elements count cannot be greater than the array length");
-        return null;
+        throw new Error("Elements count cannot be greater than the array length");
     }
     const randomArray = [];
 
@@ -39,11 +36,21 @@ const getRandomArray = (array, elementCount) => {
 }
 
 const randomColorRequestHandler = (req, res) => {
-    getJsonFileAsync('data/' + sourceFileName, (jsonData) => {
-        const randomPalette = getRandomArray(jsonData, 5);
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({'color-palette': randomPalette}, null, 4));
-    })
+    getJsonFileAsync(
+            'data/' + sourceFileName, 
+            (jsonData) => {
+                // Callback in case of no error in getting jsonData
+                const randomPalette = getRandomArray(jsonData, 50000);
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({'color-palette': randomPalette}, null, 4));
+            },
+            (err) => {
+                // Error Handler in case of any error
+                console.log(err.message);
+                res.statusCode = 500;
+                res.end("Server could not complete your request");
+            }
+        )
 }
 
 module.exports = {randomColorRequestHandler};
