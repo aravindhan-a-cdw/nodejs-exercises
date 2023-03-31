@@ -39,8 +39,11 @@ const randomColorRequestHandler = (req, res) => {
     getJsonFileAsync(
             'data/' + sourceFileName, 
             (jsonData) => {
+                if(!(jsonData instanceof Array)){
+                    throw new Error("JSON data in file is not a array!");
+                }
                 // Callback in case of no error in getting jsonData
-                const randomPalette = getRandomArray(jsonData, 50000);
+                const randomPalette = getRandomArray(jsonData, 5);
                 res.setHeader('Content-Type', 'application/json');
                 res.end(JSON.stringify({'color-palette': randomPalette}, null, 4));
             },
