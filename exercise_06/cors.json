@@ -1,0 +1,5 @@
+{
+    "origin": ["localhost:[1000-8000]$/"],
+    "methods": ["GET"],
+    "optionsSuccessStatus": 204
+}
