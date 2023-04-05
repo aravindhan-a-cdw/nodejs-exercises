@@ -5,7 +5,7 @@
     4. Read the newly created `randomized_color_ palette.json` again in the same NodeJS program and print those 5 colors in the console
 */
 
-let fs = require('fs');
+const fs = require('fs');
 
 let sourceFileName = 'color_palette.json';
 let newFileName = 'randomized_color_palette.json';
@@ -16,25 +16,23 @@ const getJsonFileSync = (fileName) => {
         const fileData = fs.readFileSync(fileName, "utf-8");
         const jsonData = JSON.parse(fileData);
         return jsonData;
-    } catch (err) {
-        console.error(err.message);
+    } catch (error) {
+        console.error("Error:", error.message);
     }
     return null;
 }
 
 // Get File Data and parse as json and pass it to the callback
 const getJsonFileAsync = (fileName, callback) => {
-    fs.readFile(fileName, 'utf-8', (err, fileData) => {
-        if (err) {
-            console.log("Error while reading the file");
-            console.error(err.message);
-            return;
-        }
+    fs.readFile(fileName, 'utf-8', (error, fileData) => {
         try{
+            if (error) {
+                throw error;
+            }
             const jsonFileData = JSON.parse(fileData);
             callback(jsonFileData);
-        } catch (err) {
-            console.log(err.message);
+        } catch (error) {
+            console.error("Error:", error.message);
         }
     });
 }
@@ -43,8 +41,7 @@ const getJsonFileAsync = (fileName, callback) => {
 const getRandomElements = (array, elementCount) => {
 
     if(elementCount > array.length) {
-        console.log("Elements count cannot be greater than the array length");
-        return null;
+        throw new Error("Elements count cannot be greater than the array length");
     }
     const randomArray = [];
 
@@ -62,23 +59,36 @@ const getRandomElements = (array, elementCount) => {
 const saveRandomColorsSync = (sourceFileName, destFileName, count) => {
     try{
         const colorPalette = getJsonFileSync(sourceFileName);
+        if(colorPalette === null) {
+            throw new Error("Color palette is null");
+        }
+        if(colorPalette.length === 0){
+            throw new Error("Color palettes is empty!");
+        }
         const randomArray = getRandomElements(colorPalette, count);
 
         fs.writeFileSync(destFileName, JSON.stringify(value=randomArray, null, "\t"))
     }catch (error) {
-        console.log(error.message);
+        console.error("Error:", error.message);
     }
 }
 
 // Save random colorpalatte asynchronously
 const saveRandomColorsAsync = (sourceFileName, destFileName, count) => {
-    getJsonFileAsync(sourceFileName, (jsonData) => {
-        const randomArray = getRandomElements(jsonData, count);
+    getJsonFileAsync(sourceFileName, (colorPalette) => {
+        try {
+            if(colorPalette.length === 0) {
+                throw new Error("Color Palette is empty!");
+            }
+            const randomArray = getRandomElements(colorPalette, count);
+        } catch (error) {
+            console.error("Error:", error.message);
+        }
 
-        const fileWriteCallback = (err) => {
-            if(err){
+        const fileWriteCallback = (error) => {
+            if(error){
                 console.log("Error Occurred while writing the file");
-                console.log(err.message);
+                console.log(error.message);
             } else {
                 console.log("File has been saved successfully!");
             }
