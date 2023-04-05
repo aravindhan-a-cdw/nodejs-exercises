@@ -1,6 +1,7 @@
 // Import
 const fs = require('fs');
 const express = require('express');
+const cors = require('cors');
 
 const { logger, loggerMiddleware } = require('./logger');
 const buddyRouter = require('./routes/buddy.routes');
@@ -10,7 +11,9 @@ require('dotenv').config();
 
 const app = express();
 
+
 // Set Middlewares
+app.use(cors());
 app.use(express.json());    // To Handle json data sent through body
 app.use(express.urlencoded({extended: true}));  // To Handle form data as 
 app.use(loggerMiddleware);
