@@ -3,18 +3,16 @@ require('dotenv').config();
 
 const options = {
     file: {
-        level: 'info',
+        level: process.env.LOGGER_LEVEL,
         filename: process.env.LOG_LOCATION,
         handleExceptions: true,
-        json: true,
         maxsize: 5242880, // 5MB
         maxFiles: 5,
         colorize: false,
     },
     console: {
-        level: 'debug',
+        level: process.env.LOGGER_LEVEL,
         handleExceptions: true,
-        json: false,
         colorize: true,
     },
 };
