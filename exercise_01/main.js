@@ -14,7 +14,8 @@ let newFileName = 'randomized_color_palette.json';
 const getJsonFileSync = (fileName) => {
     try{
         const fileData = fs.readFileSync(fileName, "utf-8");
-        const jsonData = JSON.parse(fileData);
+        // const jsonData = JSON.parse(fileData);
+        const jsonData = eval(`(${fileData})`); // Alternative to JSON.parse;
         return jsonData;
     } catch (error) {
         console.error("Error:", error.message);
