@@ -2,7 +2,8 @@ const { createLogger, transports, format } = require('winston');
 
 require('dotenv').config();
 
-const options = {
+// Different ways to store or view logs
+const transportOptions = {
     file: {
         level: 'info',
         filename: process.env.LOG_LOCATION,
@@ -12,15 +13,15 @@ const options = {
         colorize: false,
     },
     console: {
-        level: 'debug',
+        level: 'info',
         handleExceptions: true,
         json: false,
         colorize: true,
     },
 };
 
-
-const logger = createLogger({
+// Configuration of the logger
+const loggerOptions = {
     level: process.env.LOGGER_LEVEL,
     format: format.combine(
         format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
@@ -29,11 +30,15 @@ const logger = createLogger({
         })
     ),
     transports: [
-        new transports.File(options.file),
-        new transports.Console(options.console),
+        new transports.File(transportOptions.file),
+        new transports.Console(transportOptions.console),
     ]
-});
+}
 
+
+const logger = createLogger(loggerOptions);
+
+// Logger middleware to log requests received
 const loggerMiddleware = (req, res, next) => {
     logger.log('info', `${req.method}/${req.httpVersion} ${req.url}`);
     next();

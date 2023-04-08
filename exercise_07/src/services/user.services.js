@@ -4,7 +4,10 @@ const {hash} = require('bcrypt');
 const HTTPError = require('../utils/error_utils/HTTPError');
 require('dotenv').config();
 
-
+/**
+ * A function to store the user data with hashing in persistent storage.
+ * @param {Object} userData Object containing username, password and other user data.
+ */
 const createUser = async (userData) => {
     
     let users = [];

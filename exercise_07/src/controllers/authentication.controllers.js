@@ -1,3 +1,4 @@
+const { STATUS_CODES, MESSAGES, REQUEST_STATUS, ERRORS } = require("../constants/response.constants");
 const { checkUser, getJWTToken } = require("../services/authentication.services");
 const HTTPError = require("../utils/error_utils/HTTPError");
 
@@ -6,7 +7,7 @@ const loginController = async (req, res, next) => {
     try{
         // Check if user is already logged in
         if(req.isAuthenticated) {
-            throw new HTTPError("You are already logged in!", "UserLoggedIn", 400);
+            throw new HTTPError(MESSAGES.ALREADY_LOGGED_IN, ERRORS.ALREADY_LOGGED_IN, STATUS_CODES.BAD_REQUEST);
         }
     
         // Get credentials and validate
@@ -14,16 +15,18 @@ const loginController = async (req, res, next) => {
             username: req.body.username, 
             password: req.body.password
         }
+        // Validate user data
         if(USER_DATA.username === undefined || USER_DATA.password === undefined) {
-            throw new HTTPError("Username or password field cannot be empty!", "ValidationError", 400);
+            throw new HTTPError(MESSAGES.CREDENTIAL_VALIDATION, ERRORS.CREDENTIAL_VALIDATION, STATUS_CODES.BAD_REQUEST);
         }
-    
+        
+        // Check registered user and send JWT Token
         const USERID = await checkUser(USER_DATA);
-        const JWT_TOKEN = await getJWTToken(USERID);
+        const JWT_TOKEN = await getJWTToken({id: USERID});
     
-        res.status(200).json({
-            status: "success",
-            message: "Log in successful",
+        res.status(STATUS_CODES.OK).json({
+            status: REQUEST_STATUS.SUCCESS,
+            message: MESSAGES.LOGIN_SUCCESS,
             token: JWT_TOKEN
         })
 

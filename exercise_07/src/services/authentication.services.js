@@ -3,17 +3,23 @@ const {existsSync} = require('fs');
 const {compare} = require('bcrypt');
 const {sign} = require('jsonwebtoken');
 const HTTPError = require('../utils/error_utils/HTTPError');
+const { ERRORS, MESSAGES, STATUS_CODES } = require('../constants/response.constants');
 require('dotenv').config();
 
 /**
  * 
- * @param {Number|String} user_id The unique id to represent a user
+ * @param {Object} user The data specific to the user
  * @returns {String} Signed JWT Token for the given payload
  */
-const getJWTToken = (user_id) => {
-    return sign({user_id}, process.env.JWT_SECRET, {expiresIn: '30m'});    
+const getJWTToken = (user) => {
+    return sign(user, process.env.JWT_SECRET, {expiresIn: '30m'});    
 }
 
+/**
+ * Function to check if user is a valid registered user.
+ * @param {Object} userData Object containing username and password.
+ * @returns UserId
+ */
 const checkUser = async (userData) => {
     let users = [];
     // Load data from file
@@ -30,14 +36,14 @@ const checkUser = async (userData) => {
     // Check if the username is available
     const USER_INDEX = users.findIndex(user => user.username === userData.username);
     if(USER_INDEX === -1){
-        throw new HTTPError("Username or password is incorrect!", "IncorrectCredentialError", 400);
+        throw new HTTPError(MESSAGES.LOGIN_FAILED, ERRORS.LOGIN_FAILED, STATUS_CODES.BAD_REQUEST);
     }
     // Fetch user data, check the password and return user id
     const EXISTING_USER = users[USER_INDEX];
     if(!(await compare(userData.password, EXISTING_USER.password))){
-        throw new HTTPError("Username or password is inncorrect!", "IncorrectCredentialError", 400);
+        throw new HTTPError(MESSAGES.LOGIN_FAILED, ERRORS.LOGIN_FAILED, STATUS_CODES.BAD_REQUEST);
     }
-    return EXISTING_USER.id || USER_INDEX;
+    return EXISTING_USER.id;
 }
 
 module.exports = {

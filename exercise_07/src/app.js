@@ -1,17 +1,17 @@
 // 3rd Party Library imports
 const express = require('express');
 const cors = require('cors');
+
 // Config imports
 require('dotenv').config();
-const {logger, loggerMiddleware} = require('./logger');
-const corsOptions = require('../cors.json');
+const corsOptions = require('./configs/cors.json');
+
 // Internal files imports
-const taskRouter = require('./routes/task.routes');
-const userRouter = require('./routes/user.routes');
-const authenticationRouter = require('./routes/authentication.routes');
-const authenticateUser = require('./middlewares/authentication.middlewares');
+const {logger, loggerMiddleware} = require('./logger');
+const { authenticationRouter, taskRouter, userRouter } = require('./routes/index.routes');
+const {authenticateUser} = require('./middlewares/authentication.middlewares');
 const notFoundMiddleware = require('./middlewares/notFound.middleware');
-const HTTPError = require('./utils/error_utils/HTTPError');
+const errorHandler = require('./middlewares/errorHandler.middleware');
 
 
 const app = express();
@@ -29,30 +29,11 @@ app.use('/user', userRouter);
 app.use('/auth', authenticationRouter);
 
 
+// Middlewares to handle non existant paths and error handling
+app.use(notFoundMiddleware);
+app.use(errorHandler);
+
+// Bind server to a port
 app.listen(process.env.PORT, () => {
     logger.info("Server is up and running in port " + process.env.PORT);
-})
-
-app.use(notFoundMiddleware);
-app.use((error, req, res, next) => {
-    console.log("Handling error");
-    if(error instanceof HTTPError) {
-        logger.info(error.json());
-        res.status(error.statusCode).json({
-            message: error.message,
-            status: "failed"
-        })
-    } else if(error instanceof Error) {
-        logger.error(error.message);
-        res.status(500).json({
-            message: error.message,
-            status: "failed"
-        })
-    } else {
-        logger.error(error);
-        return res.status(500).json({
-            message: "Server couldn't process your request!",
-            status: "failed"
-        });
-    }
 })
