@@ -1,4 +1,5 @@
 // Imports 
+const RESPONSES = require('../constants/buddyResponse.constants');
 const { readJsonFileSync, writeJsonFile } = require('../utils/file-operations');
 require('dotenv').config();
 
@@ -55,7 +56,7 @@ const createBuddy = (buddyData) => {
 
     const existingBuddy = buddiesList.filter(buddy => buddy.employeeId === buddyData.employeeId);
     if(existingBuddy.length !== 0) {
-        return "You are already in the list!";
+        return RESPONSES.EXISTING_USER;
     }
 
     // Store new buddy to the list
@@ -74,7 +75,7 @@ const createBuddy = (buddyData) => {
 const updateBuddy = (id, buddyData) => {
     const index = buddiesList.findIndex((buddy) => buddy.employeeId === id);
     if(index === -1) {
-        return "Buddy doesn't exist to update!"
+        return RESPONSES.DOESNT_EXIST
     }
     buddiesList[index] = {
         ...buddiesList[index],
@@ -92,7 +93,7 @@ const updateBuddy = (id, buddyData) => {
 const deleteBuddy = (id) => {
     const index = buddiesList.findIndex((buddy) => buddy.employeeId === id);
     if(index === -1) {
-        return "Buddy doesn't exist to delete!"
+        return RESPONSES.DOESNT_EXIST
     }
 
     buddiesList.splice(index, 1);

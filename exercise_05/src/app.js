@@ -5,6 +5,8 @@ const cors = require('cors');
 
 const { logger, loggerMiddleware } = require('./logger');
 const buddyRouter = require('./routes/buddy.routes');
+const STATUS_CODES = require('./constants/statusCodes.constants');
+const COMMON_RESPONSE = require('./constants/commonResponse.constants');
 
 require('dotenv').config();
 
@@ -25,6 +27,12 @@ app.get("/", (req, res) => {
 
 // Handle buddy requests
 app.use('/buddy', buddyRouter);
+
+app.use('*', (req, res) => {
+    res.status(STATUS_CODES.NOT_FOUND).send({
+        message: COMMON_RESPONSE.NOT_FOUND
+    })
+})
 
 app.listen(process.env.PORT, () => {
     // Create file on start of server
