@@ -13,7 +13,7 @@ const transportOptions = {
         colorize: false,
     },
     console: {
-        level: 'info',
+        level: 'error',
         handleExceptions: true,
         json: false,
         colorize: true,
@@ -31,7 +31,7 @@ const loggerOptions = {
     ),
     transports: [
         new transports.File(transportOptions.file),
-        new transports.Console(transportOptions.console),
+        // new transports.Console(transportOptions.console),
     ]
 }
 

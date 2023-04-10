@@ -10,10 +10,10 @@ router.use(authenticationRequired);
 
 // Task Routes
 router.get('/', taskGetAllController);
-router.get('/:id', taskGetController);
+router.get('/:task_id', taskGetController);
 router.post('/', taskPostController);
-router.put('/:id', taskPutController);
-router.delete('/:id', taskDeleteController);
+router.put('/:task_id', taskPutController);
+router.delete('/:task_id', taskDeleteController);
 
 // Task Comment Routes
 router.use('/:task_id/comments', commentRouter);

@@ -7,7 +7,7 @@ require('dotenv').config();
 const corsOptions = require('./configs/cors.json');
 
 // Internal files imports
-const {logger, loggerMiddleware} = require('./logger');
+const {loggerMiddleware} = require('./logger');
 const { authenticationRouter, taskRouter, userRouter } = require('./routes/index.routes');
 const {authenticateUser} = require('./middlewares/authentication.middlewares');
 const notFoundMiddleware = require('./middlewares/notFound.middleware');
@@ -22,6 +22,12 @@ app.use(loggerMiddleware);
 app.use(cors(corsOptions));
 app.use(authenticateUser);
 
+// Handle Root Path
+app.get("/", (req, res) => {
+    res.send({
+        message: "Welcome to Listify Application!"
+    })
+})
 
 //Add routes
 app.use('/task', taskRouter);
@@ -33,7 +39,4 @@ app.use('/auth', authenticationRouter);
 app.use(notFoundMiddleware);
 app.use(errorHandler);
 
-// Bind server to a port
-app.listen(process.env.PORT, () => {
-    logger.info("Server is up and running in port " + process.env.PORT);
-})
+module.exports = app;
